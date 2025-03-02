@@ -6,6 +6,7 @@ import { Image } from 'react-native';
 import { useState, useEffect } from 'react';
 
 const db = SQLite.openDatabaseSync('weather.db')
+//db.execSync("DROP TABLE IF EXISTS locations;")
 
 export default function Tab() {
   const [city, setCity] = useState('');
@@ -28,14 +29,36 @@ export default function Tab() {
   };
 
   const saveLocation = () => {
-    if (savedCities.length >= 4) return;
-    db.execSync("INSERT INTO locations (city) VALUES (?);", [city])
-    setSavedCities([...savedCities, city]);
+    if(city.length > 0)
+    {
+      try {
+        db.execSync(`INSERT INTO locations (city) VALUES ("${city}");`)
+        setSavedCities([...savedCities, city]);
+      } catch (error) {
+        return
+      }
+    }
   };
 
   useEffect(() => {
     (async () => {
-      if(!weather.is_day) setBG(require('./../../assets/images/night.png'));
+      if(weather!==null)
+      {
+        setWeather(null)
+      }
+    })();
+  }, [city]);
+
+  useEffect(() => {
+    (async () => {
+      if(weather!==null)
+      {
+        if(!weather.is_day) setBG(require('./../../assets/images/night.png'));
+        else{
+          setBG(require('./../../assets/images/day.png'));
+        }
+      }
+      
     })();
   }, [weather]);
 
@@ -44,8 +67,8 @@ export default function Tab() {
         if(db!==null)
           {
             setLoading(false);
+            db.execSync('CREATE TABLE IF NOT EXISTS "locations" ([id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, [city] TEXT NOT NULL UNIQUE);')
           }
-        db.execSync("CREATE TABLE IF NOT EXISTS locations (city VARCHAR[255]);")
       })();
     }, []);
 

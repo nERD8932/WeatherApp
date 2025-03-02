@@ -31,6 +31,9 @@ export default function Tab() {
   useEffect(() => {
     (async () => {
       if(!weather.is_day) setBG(require('./../../assets/images/night.png'));
+      else{
+        setBG(require('./../../assets/images/day.png'));
+      }
     })();
   }, [weather]);
 
