@@ -1,4 +1,4 @@
-# Weather App (by A004833386)
+# Weather App
 Made with React Native + Expo
 
 ## Get started
